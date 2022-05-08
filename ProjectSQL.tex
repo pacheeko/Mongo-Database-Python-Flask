@@ -1,0 +1,193 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[12pt]{article} % use larger type; default would be 10pt
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ebgaramond}
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+The DBMS we decided to use for our implementation was mongoDB, which is a NOSQL database. We chose mongoDB because it has an easy-to-use GUI, and is easily implemented into a python/flask webserver using pymongo, which is exactly what we did. All of our code is either in the python web server “app.py” or in the html/css documents in the “templates” folder. Since we used mongoDB and pymongo for our application, we wrote our queries using the mongoDB queries language (MQL) instead of SQL. However, I will represent these queries in SQL for the implementation section of this report. The following is all queries used in our web server in SQL format: 
+
+\section{SQL}
+
+\textbf{function:} get\_courselist()\\
+\textbf{Inputs:} None\\
+\textbf{Outputs:} List ($@department\_code, @course\_number$)
+\begin{verbatim}
+QUERY:
+   SELECT department_code, course_code FROM Course
+\end{verbatim} 
+\textbf{function:} find\_dep\_courses()\\
+\textbf{Inputs:} @department\_code\\
+\textbf{Outputs:} List ($@department\_code, @course\_number$)
+\begin{verbatim}
+QUERY:
+    SELECT department_code, course_code 
+      FROM Course AS c
+        WHERE c.department_code = @department_code
+\end{verbatim} 
+\textbf{function:} get\_course()\\
+\textbf{Inputs:} $@department\_code, @course\_number$\\
+\textbf{Outputs:} $@department\_code, @department\_name, @course\_number, @course\_name, \\ 
+@course\_description, @course\_hours, @prerequisites, @antirequisites, @corequisites, @notes$
+\begin{verbatim}
+QUERY:
+    SELECT c.department_code, c.department_name, c.course_number, c.course_name, 
+          c.course_description, c.course_hours, c.prerequisites, 
+          c.antirequisites, c.corequisites, c.notes
+      FROM Course AS c 
+        WHERE c.department_name = @department_name AND 
+              c.course_number = @course_number
+\end{verbatim} 
+\textbf{function:} get\_programlist()\\
+\textbf{Inputs:} None\\
+\textbf{Outputs:} List ($@faculty\_name, @program\_name$)
+\begin{verbatim}
+QUERY:
+   SELECT faculty_name, program_name FROM Program
+\end{verbatim} 
+\textbf{function:} get\_faculty\_programs()\\
+\textbf{Inputs:} $@faculty\_name$\\
+\textbf{Outputs:} List ($@faculty\_name, @program\_name$)
+\begin{verbatim}
+QUERY:
+   SELECT faculty_name, program_name 
+     FROM Program AS p
+       WHERE @faculty_name = p.faculty_name
+\end{verbatim} 
+\textbf{function:} get\_program\_accreditations()\\
+\textbf{Inputs:} $@faculty\_name, @program\_name$\\
+\textbf{Outputs:} $@faculty\_name, @program\_name, @accreditation, @core\_courses, \\
+        @outside\_faculty\_courses, @outside\_major\_courses, @option\_courses, @alternative\_courses$
+\begin{verbatim}
+QUERY:
+   SELECT faculty_name, program_name, accreditation, core_courses, 
+          outside_faculty_courses, outside_major_courses, option_courses, 
+          alternative_courses
+     FROM Program AS p
+       WHERE p.faculty_name = @faculty_name AND p.program_name = @program_name
+\end{verbatim} 
+\textbf{function:} add\_previous\_education()\\
+\textbf{Inputs:} $@ucid, @previous\_education$\\
+\textbf{Outputs:} none
+\begin{verbatim}
+QUERY:
+   INSERT INTO PreviousEducation (@ucid, @previous_education)
+\end{verbatim} 
+\textbf{function:} add\_uofc\_course()\\
+\textbf{Inputs:} $@ucid, @department\_code, @course\_code, @grade, @season, @year$\\
+\textbf{Outputs:} none
+\begin{verbatim}
+QUERY:
+   INSERT INTO StudentTakesCourse (@ucid, @department_code, 
+               @course_code, @grade, @season, @year)
+\end{verbatim} 
+\textbf{function:} display\_past\_uofc\_courses()\\
+\textbf{Inputs:} $@ucid$\\
+\textbf{Outputs:} List($@department\_code, @course\_code, @grade, @season, @year$)
+\begin{verbatim}
+QUERY:
+   SELECT c.department_code, c.course_code, c.grade, c.season, c.year
+     FROM StudentTakesCourse as c
+       WHERE c.ucid = @ucid
+\end{verbatim}
+\textbf{function:} delete\_course()\\
+\textbf{Inputs:} $@ucid, @department\_code, @course\_code$\\
+\textbf{Outputs:} none
+\begin{verbatim}
+QUERY:
+   DELETE FROM StudentTakesCourse AS c
+     WHERE c.ucid = @ucid AND c.department_code = @department_code AND 
+           c.course_code = @course_code
+\end{verbatim}  
+\textbf{function:} make\_schedule()\\
+\textbf{Inputs:} $@ucid, @schedule\_name$\\
+\textbf{Outputs:} $@ucid, @schedule\_name$\\
+\begin{verbatim}
+QUERY:
+   INSERT INTO Schedule (@ucid, @schedule_name)
+\end{verbatim}  
+\textbf{function:} display\_schedule()\\
+\textbf{Inputs:} $@ucid, @schedule\_name$\\
+\textbf{Outputs:} $List (@department_code, @course_code, \\
+@section_number, @season, @year)$\\
+\begin{verbatim}
+QUERY:
+  SELECT s.department_code, s.course_code, s.section_number
+           s.season, s.year
+   FROM CoursesForSemester AS s
+     WHERE s.ucid = @ucid AND s.schedule_name = @schedule_name
+\end{verbatim}  
+\textbf{function:} add\_course\_to\_schedule()\\
+\textbf{Inputs:} $@department\_code, @course\_code, @section\_number, \\
+@season, @year, @ucid, @schedule\_name$\\
+\textbf{Outputs:} none
+\begin{verbatim}
+QUERY:
+   INSERT INTO CoursesForSemester (@ucid, @schedule_name, @department_code,
+                      @course_code, @section_number, @season, @year
+\end{verbatim}  
+\textbf{function:} delete\_course\_from\_schedule()\\
+\textbf{Inputs:} $@department\_code, @course\_code, @section\_number, \\
+@ucid, @schedule\_name$\\
+\textbf{Outputs:} none
+\begin{verbatim}
+QUERY:
+   DELETE FROM CoursesForSemester (@ucid, @schedule_name, @department_code,
+                                   @course_code, @section_number)
+\end{verbatim}  
+\end{document}

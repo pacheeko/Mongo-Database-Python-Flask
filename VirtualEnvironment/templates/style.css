@@ -1,0 +1,40 @@
+#course-26 {
+  visibility: hidden;
+}
+
+#course-16 {
+  visibility: hidden;
+}
+
+#semester-navigator-button {
+  align-items: center;
+}
+
+.btn-group {
+  margin-bottom: 2%;
+  margin-top: 20%;
+}
+
+.container {
+  background-color: rgb(250, 250, 250);
+}
+
+#course-code {
+  display: inline-block;
+}
+
+.card {
+  margin-top: 2%;
+}
+
+.btn-link {
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+  color: #0000EE;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+  font-size: inherit;
+}
